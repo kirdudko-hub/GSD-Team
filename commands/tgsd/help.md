@@ -51,6 +51,36 @@ Output ONLY the reference content below. Do NOT add:
 
 ## Commands
 
+### Project & Milestone
+
+### `/tgsd:new-project`
+Initialize a new project with team-coordinated research.
+
+- Same flow as `/gsd:new-project` but research uses 4 parallel team-researchers
+- Researchers share findings via SendMessage
+
+Usage: `/tgsd:new-project`
+
+### `/tgsd:new-milestone <name>`
+Start a new milestone with team research.
+
+- 4 parallel team-researchers + synthesizer
+- Researchers communicate discoveries to each other
+- Same `.planning/` output as `/gsd:new-milestone`
+
+Usage: `/tgsd:new-milestone "v2.0 Backend"`
+
+### `/tgsd:map-codebase`
+Map codebase with team of parallel mappers.
+
+- 4 team-codebase-mappers (tech, arch, quality, concerns)
+- Mappers share discoveries (e.g., arch mapper alerts concerns mapper about circular deps)
+- Same `.planning/codebase/` output
+
+Usage: `/tgsd:map-codebase`
+
+### Phase Workflow
+
 ### `/tgsd:quick`
 Team-based quick task execution.
 
@@ -94,6 +124,19 @@ Debug with team support.
 - Same `.planning/debug/` tracking as `/gsd:debug`
 
 Usage: `/tgsd:debug "form doesn't submit"`
+
+### Verification & Audit
+
+### `/tgsd:audit-milestone [version]`
+Audit milestone with parallel verification team.
+
+- Creates team: team-verifier + team-integration-checker
+- Both run in parallel, share findings
+- Same MILESTONE-AUDIT.md output
+
+Usage: `/tgsd:audit-milestone`
+
+### Utilities
 
 ### `/tgsd:progress`
 Check project progress (routes to tgsd commands).
