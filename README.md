@@ -103,3 +103,11 @@ Each team agent adds a `<team_protocol>` section that defines:
 
 - [Claude Code](https://claude.com/claude-code) CLI
 - [GSD Plugin](https://github.com/mcp-get/gsd) (for `/gsd:*` commands)
+
+## Security
+
+This repository contains only agent definitions and command templates. No API keys, tokens, or credentials are included. **Do not commit actual secrets or credentials to this repository.**
+
+## License
+
+MIT
