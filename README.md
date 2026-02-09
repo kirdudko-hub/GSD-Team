@@ -39,22 +39,36 @@ Team-enabled versions — all GSD protocols preserved + `SendMessage`, `TaskList
 
 ## Installation
 
-### Quick Install
+### One-liner (from GitHub)
 
 ```bash
 cd your-project
-bash /path/to/GSD-Team/install.sh        # all agents
-bash /path/to/GSD-Team/install.sh solo    # only solo agents
-bash /path/to/GSD-Team/install.sh team    # only team agents
+curl -sSL https://raw.githubusercontent.com/kirdudko-hub/GSD-Team/main/install.sh | bash
+```
+
+Install specific components:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/kirdudko-hub/GSD-Team/main/install.sh | bash -s solo      # GSD agents only
+curl -sSL https://raw.githubusercontent.com/kirdudko-hub/GSD-Team/main/install.sh | bash -s team      # team agents + /tgsd:* commands
+curl -sSL https://raw.githubusercontent.com/kirdudko-hub/GSD-Team/main/install.sh | bash -s commands   # /tgsd:* commands only
+```
+
+### From cloned repo
+
+```bash
+git clone https://github.com/kirdudko-hub/GSD-Team.git
+cd your-project
+bash /path/to/GSD-Team/install.sh          # all
+bash /path/to/GSD-Team/install.sh team     # team agents + commands
 ```
 
 ### Manual
 
-Copy desired `.md` files into your project's `.claude/agents/` directory:
-
 ```bash
-mkdir -p .claude/agents
+mkdir -p .claude/agents .claude/commands/tgsd
 cp /path/to/GSD-Team/agents/team/*.md .claude/agents/
+cp /path/to/GSD-Team/commands/tgsd/*.md .claude/commands/tgsd/
 ```
 
 ## Usage
