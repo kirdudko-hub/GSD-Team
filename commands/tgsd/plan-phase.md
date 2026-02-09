@@ -57,16 +57,33 @@ Phase number: $ARGUMENTS (optional - auto-detects next unplanned phase if not pr
 
 ```bash
 ls .planning/ 2>/dev/null
-MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "balanced")
+MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "quality")
 ```
 
-**Model lookup table:**
+Default to "quality" if not set.
+
+**Model & context budget lookup table:**
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
 | team-researcher | opus | sonnet | haiku |
 | team-planner | opus | opus | sonnet |
 | team-plan-checker | sonnet | sonnet | haiku |
+
+**Context budget per model:**
+
+| Model | Window | Target (40%) | Warning (60%) | Blocker (70%) |
+|-------|--------|--------------|---------------|---------------|
+| opus | 1M | 400k tokens | 600k tokens | 700k tokens |
+| sonnet | 200k | 80k tokens | 120k tokens | 140k tokens |
+| haiku | 200k | 80k tokens | 120k tokens | 140k tokens |
+
+**Scope thresholds per model:**
+
+| Metric | Opus target | Opus blocker | Sonnet/Haiku target | Sonnet/Haiku blocker |
+|--------|-------------|--------------|---------------------|----------------------|
+| Tasks/plan | 3-4 | 6+ | 2-3 | 5+ |
+| Files/plan | 8-12 | 20+ | 5-8 | 15+ |
 
 ## 2. Parse and Normalize Arguments
 

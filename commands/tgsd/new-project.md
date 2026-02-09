@@ -44,6 +44,32 @@ Identical to /gsd:new-project but uses a team of 4 parallel team-researchers dur
 
 Setup, brownfield detection, deep questioning, write PROJECT.md, config.json. No team needed — these are interactive phases with the user.
 
+**Note:** Default model profile is "quality" (Opus 4.6 for all primary agents).
+
+## Phase 6.5: Resolve Model Profile
+
+```bash
+MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "quality")
+```
+
+Default to "quality" if not set.
+
+**Model & context budget lookup table:**
+
+| Agent | quality | balanced | budget |
+|-------|---------|----------|--------|
+| team-researcher | opus | sonnet | haiku |
+| gsd-research-synthesizer | sonnet | sonnet | haiku |
+| gsd-roadmapper | opus | sonnet | sonnet |
+
+**Context budget per model:**
+
+| Model | Window | Target (40%) | Warning (60%) | Blocker (70%) |
+|-------|--------|--------------|---------------|---------------|
+| opus | 1M | 400k tokens | 600k tokens | 700k tokens |
+| sonnet | 200k | 80k tokens | 120k tokens | 140k tokens |
+| haiku | 200k | 80k tokens | 120k tokens | 140k tokens |
+
 ## Phase 7: Research (Team Mode)
 
 Same research decision prompt as /gsd:new-project.

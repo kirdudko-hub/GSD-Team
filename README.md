@@ -113,6 +113,60 @@ Each team agent adds a `<team_protocol>` section that defines:
 - **How to track** tasks via TaskList/TaskUpdate
 - **Who to notify** for specific events
 
+## Context Budget
+
+TGSD agents manage context budget to prevent quality degradation. Each subagent gets a **fresh context window** — the orchestrator stays lean (~10-15% usage).
+
+### Context Windows by Model
+
+| Model | Context Window | Default Profile |
+|-------|---------------|-----------------|
+| **Opus 4.6** | 1,000,000 tokens | quality (default) |
+| **Sonnet 4.5** | 200,000 tokens | balanced |
+| **Haiku 4.5** | 200,000 tokens | budget |
+
+### Budget Thresholds
+
+Plans must complete within the target zone. Quality degrades as context fills:
+
+| Zone | % of Window | Opus (1M) | Sonnet/Haiku (200k) |
+|------|-------------|-----------|---------------------|
+| **Target** | 40% | 400k tokens | 80k tokens |
+| **Warning** | 60% | 600k tokens | 120k tokens |
+| **Blocker** | 70% | 700k tokens | 140k tokens |
+
+### Scope Thresholds by Model
+
+Opus can handle larger plans due to its 5x larger context window:
+
+| Metric | Opus target | Opus blocker | Sonnet/Haiku target | Sonnet/Haiku blocker |
+|--------|-------------|--------------|---------------------|----------------------|
+| Tasks/plan | 3-4 | 6+ | 2-3 | 5+ |
+| Files/plan | 8-12 | 20+ | 5-8 | 15+ |
+
+### Model Profiles
+
+Set via `/gsd:set-profile`:
+
+| Profile | Primary Agents | Verification/Support | Best For |
+|---------|---------------|---------------------|----------|
+| **quality** (default) | Opus 4.6 (1M context) | Sonnet 4.5 | Production projects |
+| **balanced** | Opus for planner, Sonnet for rest | Sonnet 4.5 | Cost-conscious quality |
+| **budget** | Sonnet 4.5 | Haiku 4.5 | Quick experiments |
+
+### Agent Model Assignments
+
+| Agent | quality | balanced | budget |
+|-------|---------|----------|--------|
+| team-executor | opus | sonnet | sonnet |
+| team-planner | opus | opus | sonnet |
+| team-debugger | opus | sonnet | sonnet |
+| team-verifier | sonnet | sonnet | haiku |
+| team-researcher | opus | sonnet | haiku |
+| team-plan-checker | sonnet | sonnet | haiku |
+| team-codebase-mapper | sonnet | sonnet | haiku |
+| team-integration-checker | sonnet | sonnet | haiku |
+
 ## Requirements
 
 - [Claude Code](https://claude.com/claude-code) CLI

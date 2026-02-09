@@ -34,6 +34,28 @@ Output ONLY the reference content below. Do NOT add:
 | Communication | Hub-and-spoke via orchestrator | Mesh via SendMessage + TaskList |
 | Speed | Predictable | Faster for multi-plan phases |
 | Context | Fresh per agent | Fresh per agent + shared TaskList |
+| Default profile | balanced | quality (Opus 4.6, 1M context) |
+
+## Context Budget
+
+Each agent gets a fresh context window. Budget depends on model:
+
+| Model | Window | Target (40%) | Warning (60%) | Blocker (70%) |
+|-------|--------|--------------|---------------|---------------|
+| Opus 4.6 | 1M | 400k tokens | 600k tokens | 700k tokens |
+| Sonnet 4.5 | 200k | 80k tokens | 120k tokens | 140k tokens |
+| Haiku 4.5 | 200k | 80k tokens | 120k tokens | 140k tokens |
+
+Scope thresholds scale with model:
+
+| Metric | Opus | Sonnet/Haiku |
+|--------|------|--------------|
+| Tasks/plan target | 3-4 | 2-3 |
+| Tasks/plan blocker | 6+ | 5+ |
+| Files/plan target | 8-12 | 5-8 |
+| Files/plan blocker | 20+ | 15+ |
+
+Default profile: **quality** (Opus 4.6 for primary agents). Change with `/gsd:set-profile`.
 
 ## When to Use TGSD
 

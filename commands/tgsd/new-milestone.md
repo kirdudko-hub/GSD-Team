@@ -62,14 +62,26 @@ Load context, gather milestone goals, determine version, update PROJECT.md, upda
 ## Phase 6.5: Resolve Model Profile
 
 ```bash
-MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "balanced")
+MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "quality")
 ```
+
+Default to "quality" if not set.
+
+**Model & context budget lookup table:**
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
 | team-researcher | opus | sonnet | haiku |
 | gsd-research-synthesizer | sonnet | sonnet | haiku |
 | gsd-roadmapper | opus | sonnet | sonnet |
+
+**Context budget per model:**
+
+| Model | Window | Target (40%) | Warning (60%) | Blocker (70%) |
+|-------|--------|--------------|---------------|---------------|
+| opus | 1M | 400k tokens | 600k tokens | 700k tokens |
+| sonnet | 200k | 80k tokens | 120k tokens | 140k tokens |
+| haiku | 200k | 80k tokens | 120k tokens | 140k tokens |
 
 ## Phase 7: Research Decision (Team Mode)
 
