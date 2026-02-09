@@ -82,18 +82,56 @@ Use with standard GSD slash commands:
 /gsd:debug
 ```
 
-### Team Mode
+### Team Mode (`/tgsd:*` commands)
 
-Create a team and spawn agents:
-```
-TeamCreate → TaskCreate → Task (subagent_type: "team-executor", team_name: "my-team")
-```
+#### Project & Milestone
 
-Team agents will:
-- Claim tasks from shared TaskList
-- Send status updates via SendMessage
-- Coordinate with each other on findings
-- Follow all GSD protocols (atomic commits, checkpoints, verification)
+| Command | Description | Team Agents |
+|---------|-------------|-------------|
+| `/tgsd:new-project` | Initialize new project with team research | 4x team-researcher + synthesizer |
+| `/tgsd:new-milestone <name>` | Start new milestone with team research | 4x team-researcher + synthesizer + roadmapper |
+| `/tgsd:map-codebase` | Map codebase with parallel mappers | 4x team-codebase-mapper (tech, arch, quality, concerns) |
+
+#### Phase Workflow
+
+| Command | Description | Team Agents |
+|---------|-------------|-------------|
+| `/tgsd:quick` | Quick task with team coordination | team-planner + team-executor |
+| `/tgsd:plan-phase <N>` | Plan phase with coordinating team | team-researcher + team-planner + team-plan-checker |
+| `/tgsd:execute-phase <N>` | Execute phase with parallel executors | Nx team-executor + team-verifier |
+| `/tgsd:debug [issue]` | Debug with team support | team-debugger + team-researcher |
+
+Flags for `plan-phase`: `--research`, `--skip-research`, `--gaps`, `--skip-verify`
+Flags for `execute-phase`: `--gaps-only`
+
+#### Verification & Utilities
+
+| Command | Description | Team Agents |
+|---------|-------------|-------------|
+| `/tgsd:audit-milestone` | Audit milestone with parallel verification | team-verifier + team-integration-checker |
+| `/tgsd:progress` | Check progress, route to `/tgsd:*` commands | — |
+| `/tgsd:shutdown` | Gracefully shut down all active agents | — |
+| `/tgsd:help` | Show full command reference | — |
+
+#### Common Workflows
+
+```bash
+# Quick team task
+/tgsd:quick
+
+# Full phase with team
+/tgsd:plan-phase 3
+/clear
+/tgsd:execute-phase 3
+
+# Team debugging
+/tgsd:debug "API returns 500 on save"
+
+# New project from scratch
+/tgsd:new-project
+/tgsd:plan-phase 1
+/tgsd:execute-phase 1
+```
 
 ## Architecture
 
