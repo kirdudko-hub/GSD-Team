@@ -34,26 +34,26 @@ Output ONLY the reference content below. Do NOT add:
 | Communication | Hub-and-spoke via orchestrator | Mesh via SendMessage + TaskList |
 | Speed | Predictable | Faster for multi-plan phases |
 | Context | Fresh per agent | Fresh per agent + shared TaskList |
-| Default profile | balanced | quality (Opus 4.6, 1M context) |
+| Default profile | balanced | quality (Opus 4.6, 200k context) |
 
 ## Context Budget
 
-Each agent gets a fresh context window. Budget depends on model:
+Each agent gets a fresh 200k context window.
 
-| Model | Window | Target (40%) | Warning (60%) | Blocker (70%) |
-|-------|--------|--------------|---------------|---------------|
-| Opus 4.6 | 1M | 400k tokens | 600k tokens | 700k tokens |
-| Sonnet 4.5 | 200k | 80k tokens | 120k tokens | 140k tokens |
-| Haiku 4.5 | 200k | 80k tokens | 120k tokens | 140k tokens |
+| Threshold | % of Window | Tokens |
+|-----------|-------------|--------|
+| Target | 40% | 80k tokens |
+| Warning | 60% | 120k tokens |
+| Blocker | 70% | 140k tokens |
 
-Scope thresholds scale with model:
+All models use 200k context window.
 
-| Metric | Opus | Sonnet/Haiku |
-|--------|------|--------------|
-| Tasks/plan target | 3-4 | 2-3 |
-| Tasks/plan blocker | 6+ | 5+ |
-| Files/plan target | 8-12 | 5-8 |
-| Files/plan blocker | 20+ | 15+ |
+Scope thresholds:
+
+| Metric | Target | Blocker |
+|--------|--------|---------|
+| Tasks/plan | 2-3 | 5+ |
+| Files/plan | 5-8 | 15+ |
 
 Default profile: **quality** (Opus 4.6 for primary agents). Change with `/gsd:set-profile`.
 

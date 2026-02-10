@@ -75,13 +75,13 @@ Default to "quality" if not set.
 | gsd-research-synthesizer | sonnet | sonnet | haiku |
 | gsd-roadmapper | opus | sonnet | sonnet |
 
-**Context budget per model:**
+**Context budget (all models use 200k window):**
 
-| Model | Window | Target (40%) | Warning (60%) | Blocker (70%) |
-|-------|--------|--------------|---------------|---------------|
-| opus | 1M | 400k tokens | 600k tokens | 700k tokens |
-| sonnet | 200k | 80k tokens | 120k tokens | 140k tokens |
-| haiku | 200k | 80k tokens | 120k tokens | 140k tokens |
+| Threshold | % of Window | Tokens |
+|-----------|-------------|--------|
+| Target | 40% | 80k tokens |
+| Warning | 60% | 120k tokens |
+| Blocker | 70% | 140k tokens |
 
 ## Phase 7: Research Decision (Team Mode)
 

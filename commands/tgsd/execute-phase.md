@@ -30,7 +30,7 @@ Team mode execution:
 
 Same output as /gsd:execute-phase but with team coordination.
 
-Context budget: ~10-15% team lead, fresh context window per agent (1M for Opus, 200k for Sonnet/Haiku).
+Context budget: ~10-15% team lead, fresh 200k context window per agent.
 </objective>
 
 <execution_context>
@@ -64,20 +64,20 @@ Default to "quality" if not set.
 | team-executor | opus | sonnet | sonnet |
 | team-verifier | sonnet | sonnet | haiku |
 
-**Context budget per model:**
+**Context budget (all models use 200k window):**
 
-| Model | Window | Target (40%) | Warning (60%) | Blocker (70%) |
-|-------|--------|--------------|---------------|---------------|
-| opus | 1M | 400k tokens | 600k tokens | 700k tokens |
-| sonnet | 200k | 80k tokens | 120k tokens | 140k tokens |
-| haiku | 200k | 80k tokens | 120k tokens | 140k tokens |
+| Threshold | % of Window | Tokens |
+|-----------|-------------|--------|
+| Target | 40% | 80k tokens |
+| Warning | 60% | 120k tokens |
+| Blocker | 70% | 140k tokens |
 
-**Scope thresholds per model:**
+**Scope thresholds:**
 
-| Metric | Opus target | Opus blocker | Sonnet/Haiku target | Sonnet/Haiku blocker |
-|--------|-------------|--------------|---------------------|----------------------|
-| Tasks/plan | 3-4 | 6+ | 2-3 | 5+ |
-| Files/plan | 8-12 | 20+ | 5-8 | 15+ |
+| Metric | Target | Blocker |
+|--------|--------|---------|
+| Tasks/plan | 2-3 | 5+ |
+| Files/plan | 5-8 | 15+ |
 
 ## 1. Validate phase exists
 
