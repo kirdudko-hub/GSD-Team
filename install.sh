@@ -18,6 +18,7 @@ REPO_RAW="https://raw.githubusercontent.com/kirdudko-hub/GSD-Team/main"
 MODE="${1:-all}"
 AGENTS_TARGET=".claude/agents"
 COMMANDS_TARGET=".claude/commands/tgsd"
+HOOKS_TARGET=".claude/hooks"
 
 # ─── Colors ───
 RED='\033[0;31m'
@@ -51,7 +52,7 @@ setup_remote() {
     header "Downloading GSD-Team from GitHub..."
     TMPDIR_CLEAN=$(mktemp -d)
     SCRIPT_DIR="$TMPDIR_CLEAN/GSD-Team"
-    mkdir -p "$SCRIPT_DIR/agents/solo" "$SCRIPT_DIR/agents/team" "$SCRIPT_DIR/commands/tgsd"
+    mkdir -p "$SCRIPT_DIR/agents/solo" "$SCRIPT_DIR/agents/team" "$SCRIPT_DIR/commands/tgsd" "$SCRIPT_DIR/hooks"
     download_files
     ok "Downloaded successfully"
   else
@@ -78,6 +79,9 @@ download_files() {
            new-project plan-phase progress quick shutdown; do
     curl -sSL "$REPO_RAW/commands/tgsd/${f}.md" -o "$SCRIPT_DIR/commands/tgsd/${f}.md"
   done
+
+  # Hooks
+  curl -sSL "$REPO_RAW/hooks/gsd-statusline.js" -o "$SCRIPT_DIR/hooks/gsd-statusline.js"
 }
 
 cleanup() {
@@ -110,6 +114,35 @@ install_commands() {
   local count
   count=$(ls -1 "$SCRIPT_DIR/commands/tgsd/"*.md 2>/dev/null | wc -l | tr -d ' ')
   ok "$count /tgsd:* commands installed"
+}
+
+install_hooks() {
+  mkdir -p "$HOOKS_TARGET"
+  cp "$SCRIPT_DIR/hooks/gsd-statusline.js" "$HOOKS_TARGET/"
+  ok "statusline hook installed"
+
+  # Configure statusline in settings.json if not already set
+  local settings=".claude/settings.json"
+  if [ -f "$settings" ]; then
+    if ! grep -q "gsd-statusline" "$settings" 2>/dev/null; then
+      # Add statusLine to existing settings using node
+      node -e "
+        const fs = require('fs');
+        const s = JSON.parse(fs.readFileSync('$settings','utf8'));
+        s.statusLine = { type: 'command', command: 'node .claude/hooks/gsd-statusline.js' };
+        fs.writeFileSync('$settings', JSON.stringify(s, null, 2) + '\n');
+      " 2>/dev/null && ok "statusline configured in settings.json" || ok "statusline script ready (configure manually)"
+    else
+      ok "statusline already configured"
+    fi
+  else
+    # Create new settings.json
+    mkdir -p .claude
+    echo '{"statusLine":{"type":"command","command":"node .claude/hooks/gsd-statusline.js"}}' | node -e "
+      const fs = require('fs');
+      let d = ''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>fs.writeFileSync('$settings',JSON.stringify(JSON.parse(d),null,2)+'\n'));
+    " 2>/dev/null && ok "settings.json created with statusline" || ok "statusline script ready (configure manually)"
+  fi
 }
 
 # ─── Usage ───
@@ -157,6 +190,7 @@ case "$MODE" in
   team)
     install_team
     install_commands
+    install_hooks
     ;;
   commands)
     install_commands
@@ -165,6 +199,7 @@ case "$MODE" in
     install_solo
     install_team
     install_commands
+    install_hooks
     ;;
 esac
 
@@ -177,8 +212,10 @@ echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━�
 echo -e "${GREEN}${BOLD} Installation complete${NC}"
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
+HOOKS_INSTALLED=$(ls -1 "$HOOKS_TARGET/"*.js 2>/dev/null | wc -l | tr -d ' ')
 echo -e "  Agents:   ${BOLD}$TOTAL_AGENTS${NC} files in $AGENTS_TARGET/"
 echo -e "  Commands: ${BOLD}$TOTAL_COMMANDS${NC} files in $COMMANDS_TARGET/"
+[ "$HOOKS_INSTALLED" -gt 0 ] 2>/dev/null && echo -e "  Hooks:    ${BOLD}$HOOKS_INSTALLED${NC} files in $HOOKS_TARGET/"
 echo ""
 echo "  /gsd:help   — Solo GSD commands"
 echo "  /tgsd:help  — Team GSD commands"

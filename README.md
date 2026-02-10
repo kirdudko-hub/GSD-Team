@@ -151,6 +151,33 @@ Each team agent adds a `<team_protocol>` section that defines:
 - **How to track** tasks via TaskList/TaskUpdate
 - **Who to notify** for specific events
 
+## Statusline
+
+Custom status bar for Claude Code showing real-time session info:
+
+```
+⬆ Opus │ Fixing auth bug [3/7 42%] loggsd ██░░░░░░░░ 19% 150k/1.0M in:150k out:45k $1.23 5m25s
+team: ⚡executor-01 │ ⚡executor-02 │ ✓ verifier  tasks: 2/5 (40%)
+```
+
+**Line 1:** model | current task + progress | directory | context bar + tokens | usage in/out | cost + duration
+
+**Line 2** (when team is active): agent icons + names | team task progress
+
+Installed automatically with `team` or `all` mode. Configures `.claude/settings.json` to use the statusline hook.
+
+### Agent Icons
+
+| Icon | Agent Type |
+|------|-----------|
+| ⚡ | executor |
+| 📋 | planner |
+| ✓ | verifier |
+| 🔍 | debugger |
+| 🔬 | researcher |
+| ☑ | plan-checker |
+| 🗺 | codebase-mapper |
+
 ## Context Budget
 
 TGSD agents manage context budget to prevent quality degradation. Each subagent gets a **fresh context window** — the orchestrator stays lean (~10-15% usage).
