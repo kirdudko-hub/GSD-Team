@@ -182,22 +182,24 @@ Installed automatically with `team` or `all` mode. Configures `.claude/settings.
 
 TGSD agents manage context budget to prevent quality degradation. Each subagent gets a **fresh 200k context window** — the orchestrator stays lean (~10-15% usage).
 
-### Budget Thresholds
+### Quality Degradation Curve
 
-All models use a 200,000 token context window. Plans must complete within the target zone. Quality degrades as context fills:
+All models use a 200,000 token context window. Quality degrades as context fills:
 
-| Zone | % of Window | Tokens |
-|------|-------------|--------|
-| **Target** | 40% | 80k tokens |
-| **Warning** | 60% | 120k tokens |
-| **Blocker** | 70% | 140k tokens |
+| Context Usage | Quality | Tokens |
+|---------------|---------|--------|
+| **0-30%** | PEAK | 0-60k |
+| **30-50%** | GOOD | 60-100k |
+| **50-70%** | DEGRADING | 100-140k |
+| **70%+** | POOR | 140k+ |
+
+**Target: complete within ~50% context (100k tokens).**
 
 ### Scope Thresholds
 
-| Metric | Target | Blocker |
-|--------|--------|---------|
-| Tasks/plan | 2-3 | 5+ |
-| Files/plan | 5-8 | 15+ |
+| Metric | Good | Warning | Blocker |
+|--------|------|---------|---------|
+| Tasks/plan | 2-3 | 4 | 5+ |
 
 ### Model Profiles
 

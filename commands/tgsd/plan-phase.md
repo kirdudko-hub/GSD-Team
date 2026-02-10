@@ -70,20 +70,22 @@ Default to "quality" if not set.
 | team-planner | opus | opus | sonnet |
 | team-plan-checker | sonnet | sonnet | haiku |
 
-**Context budget (all models use 200k window):**
+**Context budget (200k window per agent):**
 
-| Threshold | % of Window | Tokens |
-|-----------|-------------|--------|
-| Target | 40% | 80k tokens |
-| Warning | 60% | 120k tokens |
-| Blocker | 70% | 140k tokens |
+| Context Usage | Quality | Tokens |
+|---------------|---------|--------|
+| 0-30% | PEAK | 0-60k |
+| 30-50% | GOOD | 60-100k |
+| 50-70% | DEGRADING | 100-140k |
+| 70%+ | POOR | 140k+ |
+
+**Target: complete within ~50% context (100k tokens).**
 
 **Scope thresholds:**
 
-| Metric | Target | Blocker |
-|--------|--------|---------|
-| Tasks/plan | 2-3 | 5+ |
-| Files/plan | 5-8 | 15+ |
+| Metric | Good | Warning | Blocker |
+|--------|------|---------|---------|
+| Tasks/plan | 2-3 | 4 | 5+ |
 
 ## 2. Parse and Normalize Arguments
 

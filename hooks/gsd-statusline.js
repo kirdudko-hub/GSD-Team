@@ -50,12 +50,12 @@ process.stdin.on('end', () => {
       const filled = Math.floor(used / 10);
       const bar = '█'.repeat(filled) + '░'.repeat(10 - filled);
 
-      // Color by budget thresholds: 40% target, 60% warning, 70% blocker
+      // Color by GSD Quality Degradation Curve: 0-30% PEAK, 30-50% GOOD, 50-70% DEGRADING, 70%+ POOR
       let color;
-      if (used < 50) color = C.green;       // within target
-      else if (used < 75) color = C.yellow;  // approaching warning
-      else if (used < 90) color = C.orange;  // warning zone
-      else color = C.blink + C.red;          // blocker
+      if (used < 38) color = C.green;        // PEAK (0-30% raw)
+      else if (used < 63) color = C.yellow;  // GOOD (30-50% raw)
+      else if (used < 88) color = C.orange;  // DEGRADING (50-70% raw)
+      else color = C.blink + C.red;          // POOR (70%+ raw)
 
       // Token count
       const windowSize = data.context_window?.context_window_size;
