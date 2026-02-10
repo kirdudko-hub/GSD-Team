@@ -135,6 +135,8 @@ Flags for `execute-phase`: `--gaps-only`
 
 ## Architecture
 
+### Solo vs Team
+
 ```
 Solo (hub-and-spoke):        Team (mesh):
 
@@ -145,11 +147,49 @@ Solo (hub-and-spoke):        Team (mesh):
   └── ...                    └── shared TaskList
 ```
 
-Each team agent adds a `<team_protocol>` section that defines:
+### How Agents Work
+
+Each agent gets a **fresh 200k context window**. Plans are sliced into small units (2-3 tasks) so that an agent **completes its work** within ~50% of context (100k tokens). Context is never "refreshed" mid-task — instead, work is scoped to fit.
+
+```
+Orchestrator (team-lead, ~10-15% context)
+│
+├─ Spawn team-executor-1 (fresh 200k) → plan 01-01
+│   ├─ Task 1 → commit → SendMessage("Task 1 done")
+│   ├─ Task 2 → commit → SendMessage("Task 2 done")
+│   ├─ Task 3 → commit → SendMessage("PLAN COMPLETE")
+│   └─ Agent terminates
+│
+├─ Spawn team-executor-2 (fresh 200k) → plan 01-02 (parallel)
+│   ├─ Task 1 → commit → SendMessage("Task 1 done")
+│   ├─ Task 2 → [checkpoint: needs user decision] → STOP
+│   │   └─ Returns structured state to orchestrator
+│   │       └─ Orchestrator → new executor (fresh 200k) → continues
+│   └─ ...
+│
+└─ When all executors done → spawn team-verifier (fresh 200k)
+    └─ Verifies all plans → SendMessage("VERIFICATION COMPLETE")
+```
+
+**Key principles:**
+
+- **No context refresh.** An agent lives, does its work, and dies. If interrupted by a checkpoint, a *new* agent is spawned with the previous agent's state.
+- **Plans are small by design.** The planner enforces 2-3 tasks per plan so each executor finishes well within its context budget.
+- **Parallel execution.** Wave-1 plans run simultaneously on separate executors. Wave-2 starts only after wave-1 completes.
+
+### Communication
+
+Agents coordinate via two channels:
+
+| Channel | Mechanism | Used For |
+|---------|-----------|----------|
+| **Direct messages** | `SendMessage` | Status updates, blockers, architectural decisions, completion reports |
+| **Shared task board** | `TaskList` / `TaskUpdate` | Task assignments, progress tracking, dependency coordination |
+
+Each team agent has a `<team_protocol>` section that defines:
 - **When to message** other agents
-- **What to include** in messages
-- **How to track** tasks via TaskList/TaskUpdate
-- **Who to notify** for specific events
+- **What to include** in messages (commit hashes, file lists, blockers)
+- **Who to notify** for specific events (completion, blockers, decisions)
 
 ## Statusline
 
